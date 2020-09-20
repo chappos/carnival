@@ -1,7 +1,7 @@
 [gd_scene load_steps=26 format=2]
 
 [ext_resource path="res://Assets/Knight Character Pack by RgsDev/Knight 3/knight 3 no weapon.png" type="Texture" id=1]
-[ext_resource path="res://Enemy.gd" type="Script" id=2]
+[ext_resource path="res://Enemy/Enemy.gd" type="Script" id=2]
 [ext_resource path="res://Collisions/Hurtbox.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Collisions/Hitbox.tscn" type="PackedScene" id=4]
 
@@ -23,7 +23,7 @@ tracks/0/keys = {
 "values": [ 22, 23, 24, 25 ]
 }
 
-[sub_resource type="Animation" id=14]
+[sub_resource type="Animation" id=3]
 resource_name = "Hurt"
 length = 0.6
 tracks/0/type = "value"
@@ -53,7 +53,7 @@ tracks/1/keys = {
 } ]
 }
 
-[sub_resource type="Animation" id=3]
+[sub_resource type="Animation" id=4]
 length = 0.5
 loop = true
 tracks/0/type = "value"
@@ -69,7 +69,7 @@ tracks/0/keys = {
 "values": [ 0, 1, 2, 3, 4 ]
 }
 
-[sub_resource type="Animation" id=4]
+[sub_resource type="Animation" id=5]
 length = 0.8
 loop = true
 tracks/0/type = "value"
@@ -85,49 +85,49 @@ tracks/0/keys = {
 "values": [ 5, 6, 7, 8, 9, 10, 11, 12 ]
 }
 
-[sub_resource type="AnimationNodeAnimation" id=5]
+[sub_resource type="AnimationNodeAnimation" id=6]
 animation = "Die"
 
-[sub_resource type="AnimationNodeAnimation" id=15]
+[sub_resource type="AnimationNodeAnimation" id=7]
 animation = "Hurt"
 
-[sub_resource type="AnimationNodeAnimation" id=6]
+[sub_resource type="AnimationNodeAnimation" id=8]
 animation = "Idle"
 
-[sub_resource type="AnimationNodeAnimation" id=7]
+[sub_resource type="AnimationNodeAnimation" id=9]
 animation = "Run"
 
-[sub_resource type="AnimationNodeStateMachineTransition" id=8]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id=9]
-
 [sub_resource type="AnimationNodeStateMachineTransition" id=10]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=11]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=12]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=13]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=14]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=15]
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=16]
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=17]
 
-[sub_resource type="AnimationNodeStateMachineTransition" id=18]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id=19]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id=20]
-
-[sub_resource type="AnimationNodeStateMachine" id=11]
-states/Die/node = SubResource( 5 )
+[sub_resource type="AnimationNodeStateMachine" id=18]
+states/Die/node = SubResource( 6 )
 states/Die/position = Vector2( 433, 173 )
-states/Hurt/node = SubResource( 15 )
+states/Hurt/node = SubResource( 7 )
 states/Hurt/position = Vector2( 742, 157 )
-states/Idle/node = SubResource( 6 )
+states/Idle/node = SubResource( 8 )
 states/Idle/position = Vector2( 279, 48 )
-states/Run/node = SubResource( 7 )
+states/Run/node = SubResource( 9 )
 states/Run/position = Vector2( 618, 27 )
-transitions = [ "Idle", "Run", SubResource( 8 ), "Run", "Idle", SubResource( 9 ), "Idle", "Die", SubResource( 10 ), "Run", "Hurt", SubResource( 16 ), "Idle", "Hurt", SubResource( 17 ), "Hurt", "Die", SubResource( 18 ), "Hurt", "Idle", SubResource( 19 ), "Hurt", "Run", SubResource( 20 ) ]
+transitions = [ "Idle", "Run", SubResource( 10 ), "Run", "Idle", SubResource( 11 ), "Idle", "Die", SubResource( 12 ), "Run", "Hurt", SubResource( 13 ), "Idle", "Hurt", SubResource( 14 ), "Hurt", "Die", SubResource( 15 ), "Hurt", "Idle", SubResource( 16 ), "Hurt", "Run", SubResource( 17 ) ]
 start_node = "Idle"
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=12]
+[sub_resource type="AnimationNodeStateMachinePlayback" id=19]
 
-[sub_resource type="CapsuleShape2D" id=13]
+[sub_resource type="CapsuleShape2D" id=20]
 radius = 7.5
 height = 9.0
 
@@ -155,14 +155,14 @@ disabled = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/Die = SubResource( 2 )
-anims/Hurt = SubResource( 14 )
-anims/Idle = SubResource( 3 )
-anims/Run = SubResource( 4 )
+anims/Hurt = SubResource( 3 )
+anims/Idle = SubResource( 4 )
+anims/Run = SubResource( 5 )
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
-tree_root = SubResource( 11 )
+tree_root = SubResource( 18 )
 anim_player = NodePath("../AnimationPlayer")
-parameters/playback = SubResource( 12 )
+parameters/playback = SubResource( 19 )
 
 [node name="Tween" type="Tween" parent="."]
 
@@ -176,7 +176,7 @@ collision_mask = 32
 
 [node name="CollisionShape2D" parent="Hurtbox" index="0"]
 position = Vector2( 0, -5 )
-shape = SubResource( 13 )
+shape = SubResource( 20 )
 
 [node name="Hitbox" parent="." instance=ExtResource( 4 )]
 collision_layer = 16

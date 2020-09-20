@@ -60,13 +60,14 @@ func health_changed(value):
 		die()
 
 func die():
-	state = DEAD
-	collisionShape.disabled = true
-	animationState.travel("Die")
-	tween.interpolate_property(self, "modulate:a", 1.0, 0.0, 1.0, Tween.EASE_IN)
-	tween.start()
-	yield(get_tree().create_timer(1.0), "timeout")
-	queue_free()
+	if state != DEAD:
+		state = DEAD
+		collisionShape.set_deferred("disabled", true)
+		animationState.travel("Die")
+		tween.interpolate_property(self, "modulate:a", 1.0, 0.0, 1.0, Tween.EASE_IN)
+		tween.start()
+		yield(get_tree().create_timer(1.0), "timeout")
+		queue_free()
 
 func idle_state(delta):
 	animationState.travel("Idle")
