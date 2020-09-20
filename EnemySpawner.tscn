@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://EnemySpawner.gd" type="Script" id=1]
+
+[node name="EnemySpawner" type="Area2D"]
+collision_layer = 0
+collision_mask = 16
+script = ExtResource( 1 )
+enemy_file = "res://Enemy.tscn"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+
+[node name="Enemies" type="Node2D" parent="."]
+
+[node name="Timer" type="Timer" parent="."]
+
+[node name="Tween" type="Tween" parent="."]
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
