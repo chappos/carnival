@@ -7,7 +7,8 @@ onready var timer = $Timer
 onready var chaseTimer = $ChaseTimer
 onready var tween = $Tween
 onready var hitbox = $Hitbox
-onready var collisionShape = $Hitbox/CollisionShape2D
+onready var hurtbox = $Hurtbox
+onready var hitboxShape = $Hitbox/CollisionShape2D
 onready var animationPlayer = $AnimationPlayer
 onready var animationTree = $AnimationTree
 onready var animationState = animationTree.get("parameters/playback")
@@ -15,8 +16,9 @@ onready var spawnBox = get_parent().get_parent() # Parent = Enemies node, Grandp
 onready var health = max_health setget health_changed
 onready var textList = $FloatingTextList
 
-export var max_health = 1
-export var damage = 1
+export(int) var max_health = 3
+export(int) var max_damage = 2
+export(int) var min_damage = 1
 export var max_speed = 80
 export var acceleration = 500
 export var friction = 320
@@ -40,9 +42,8 @@ var chase_target = null
 func _ready():
 	animationTree.active = true
 	rng.randomize()
-	hitbox.damage = self.damage
 	yield(get_tree().create_timer(1.0), "timeout") #janky fix to hitbox on spawn bug
-	collisionShape.disabled = false
+	hitboxShape.disabled = false
 
 func _physics_process(delta):
 	match state:
@@ -65,9 +66,10 @@ func health_changed(value):
 func die():
 	if state != DEAD:
 		state = DEAD
-		collisionShape.set_deferred("disabled", true)
+		hitboxShape.set_deferred("disabled", true)
+		hurtbox.set_deferred("disabled", true)
 		animationState.travel("Die")
-		tween.interpolate_property(self, "modulate:a", 1.0, 0.0, 1.0, Tween.EASE_IN)
+		tween.interpolate_property(sprite, "modulate:a", 1.0, 0.0, 1.0, Tween.EASE_IN)
 		tween.start()
 		yield(get_tree().create_timer(1.0), "timeout")
 		queue_free()
@@ -140,14 +142,18 @@ func hurt_animation_finished():
 	state = CHASE
 
 func _on_Hurtbox_area_entered(area):
-	var area_parent = area.get_parent().get_parent()
-	take_damage(area.damage)
-	var dir = Vector2(self.global_position.x - area_parent.global_position.x, 0).normalized()
-	direction = dir.x
-	sprite.flip_h = max(0, direction)
 	if state != DEAD:
-		state = HURT
-		chase_target = area_parent
+		var area_parent = area.get_parent().get_parent()
+		take_damage(area.get_damage())
+		var dir = Vector2(self.global_position.x - area_parent.global_position.x, 0).normalized()
+		direction = dir.x
+		sprite.flip_h = max(0, direction)
+		if state == DEAD:
+			hitbox.set_deferred("disabled", true)
+			hurtbox.set_deferred("disabled", true)
+		else:
+			state = HURT
+			chase_target = area_parent
 	velocity.x = area.knockback * direction
 
 func take_damage(dmg):

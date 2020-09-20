@@ -14,7 +14,8 @@ onready var platformDrop = $PlatformDropRaycast
 onready var collisionShape = $CollisionShape2D
 onready var stats = $PlayerStats
 
-export var damage = 1
+export(int) var max_damage = 3
+export(int) var min_damage = 1
 export var max_speed = 120
 export var acceleration = 1500
 export var air_acceleration = 340
@@ -38,8 +39,10 @@ var terminal_velocity = 250
 var has_double_jump = true
 var is_climbing = false 
 var is_dropthrough = false
+var rng = RandomNumberGenerator.new()
 
 func _ready():
+	rng.randomize()
 	stats.connect("no_health", self, "queue_free")
 	animationTree.active = true
 
@@ -226,6 +229,17 @@ func check_for_ladder():
 		if input.x:
 			handle_sprite_flip(input)
 
+func take_damage(dmg):
+	stats.health -= dmg
+	hurtbox.start_invincibility(1.5)
+	animationPlayer.play("Damage")
+	var dmg_text = floating_text.instance()
+	dmg_text.position += Vector2(rng.randf_range(-7, 7), (-25 + rng.randf_range(0, -5)))
+	dmg_text.velocity = Vector2(rng.randf_range(-5, 5), 0)
+	dmg_text.modulate = Color(0.7, 0.3, 1.0, 1.0)
+	dmg_text.text = dmg
+	add_child(dmg_text)
+
 func attack_animation_finished():
 	if Input.is_action_pressed("ui_down") and is_on_floor():
 		state = CROUCH
@@ -239,7 +253,5 @@ func _on_LadderHitbox_area_exited(area):
 
 func _on_Hurtbox_area_entered(area):
 	var dir = Vector2(self.global_position.x - area.get_parent().global_position.x, 0).normalized()
-	stats.health -= area.damage
-	hurtbox.start_invincibility(1.5)
-	animationPlayer.play("Damage")
+	take_damage(area.get_damage())
 	velocity = Vector2(area.knockback * dir.x, -area.knockback)
