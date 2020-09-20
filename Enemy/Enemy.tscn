@@ -187,6 +187,8 @@ knockback = 150
 position = Vector2( 0, -5 )
 shape = SubResource( 21 )
 disabled = true
+
+[node name="FloatingTextList" type="Node2D" parent="."]
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
 [connection signal="timeout" from="ChaseTimer" to="." method="_on_ChaseTimer_timeout"]
 [connection signal="area_entered" from="Hurtbox" to="." method="_on_Hurtbox_area_entered"]

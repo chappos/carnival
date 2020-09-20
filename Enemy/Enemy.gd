@@ -1,5 +1,7 @@
 extends KinematicBody2D
 
+var floating_text = load("res://FloatingText.tscn")
+
 onready var sprite = $Sprite
 onready var timer = $Timer
 onready var chaseTimer = $ChaseTimer
@@ -11,6 +13,7 @@ onready var animationTree = $AnimationTree
 onready var animationState = animationTree.get("parameters/playback")
 onready var spawnBox = get_parent().get_parent() # Parent = Enemies node, Grandparent = EnemySpawner
 onready var health = max_health setget health_changed
+onready var textList = $FloatingTextList
 
 export var max_health = 1
 export var damage = 1
@@ -138,7 +141,7 @@ func hurt_animation_finished():
 
 func _on_Hurtbox_area_entered(area):
 	var area_parent = area.get_parent().get_parent()
-	self.health -= area.damage
+	take_damage(area.damage)
 	var dir = Vector2(self.global_position.x - area_parent.global_position.x, 0).normalized()
 	direction = dir.x
 	sprite.flip_h = max(0, direction)
@@ -147,6 +150,14 @@ func _on_Hurtbox_area_entered(area):
 		chase_target = area_parent
 	velocity.x = area.knockback * direction
 
+func take_damage(dmg):
+	self.health -= dmg
+	var dmg_text = floating_text.instance()
+	dmg_text.position += Vector2(rng.randf_range(-7, 7), (-25 + rng.randf_range(0, -5) * textList.get_child_count()))
+	dmg_text.velocity = Vector2(rng.randf_range(-5, 5), 0)
+	dmg_text.modulate = Color(0.7, 0.7, 0.1, 1.0)
+	dmg_text.text = dmg
+	textList.add_child(dmg_text)
 
 func _on_ChaseTimer_timeout():
 	match state:

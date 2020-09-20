@@ -1,5 +1,7 @@
 extends KinematicBody2D
 
+var floating_text = preload("res://FloatingText.tscn")
+
 onready var sprite = $Sprite
 onready var tween = $Tween
 onready var animationPlayer = $AnimationPlayer
@@ -234,7 +236,6 @@ func _on_LadderHitbox_area_exited(area):
 	area.get_parent().can_be_grabbed = false
 	yield(get_tree().create_timer(0.2), "timeout")
 	area.get_parent().can_be_grabbed = true
-
 
 func _on_Hurtbox_area_entered(area):
 	var dir = Vector2(self.global_position.x - area.get_parent().global_position.x, 0).normalized()
