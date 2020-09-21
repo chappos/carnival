@@ -39,7 +39,6 @@ var velocity = Vector2.ZERO
 var terminal_velocity = 250
 var has_double_jump = true
 var is_climbing = false 
-var is_dropthrough = false
 var rng = RandomNumberGenerator.new()
 
 func _ready():
@@ -190,11 +189,9 @@ func platform_drop():
 	velocity.y = -90
 	animationState.travel("Jump")
 	collisionShape.disabled = true
-	is_dropthrough = true
-	yield(get_tree().create_timer(0.2), "timeout")
-	collisionShape.disabled = false
-	is_dropthrough = false
-	
+	tween.interpolate_callback(collisionShape, 0.2, "set_disabled", false)
+	tween.start()
+
 func jump_cut():
 	if velocity.y < -110:
 		velocity.y = -110
@@ -225,8 +222,6 @@ func check_for_ladder():
 	else: # no ladder, usually called when we've climbed passed the end of a ladder
 		is_climbing = false
 		state = MOVE
-		if !is_dropthrough:
-			$CollisionShape2D.disabled = false
 		if input.x:
 			handle_sprite_flip(input)
 
