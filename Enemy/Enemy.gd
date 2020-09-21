@@ -23,6 +23,7 @@ export(int) var max_damage = 2
 export(int) var min_damage = 1
 export var max_speed = 80
 export var acceleration = 500
+export var air_acceleration = 300
 export var friction = 320
 export var gravity = 17
 export(float) var chase_time = 15.0
@@ -121,7 +122,10 @@ func chase_state(delta):
 func move(delta):
 	sprite.flip_h = min(0, direction)
 	velocity.y = min(velocity.y - (-gravity), terminal_velocity)
-	velocity = velocity.move_toward(Vector2(direction * max_speed, 0), acceleration * delta)
+	if is_on_floor():
+		velocity = velocity.move_toward(Vector2(direction * max_speed, velocity.y), acceleration * delta)
+	else:
+		velocity = velocity.move_toward(Vector2(direction * max_speed, velocity.y), air_acceleration * delta)
 	velocity = move_and_slide(velocity, Vector2(0, -1))
 
 func hurt_state(delta):
