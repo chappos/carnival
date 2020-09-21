@@ -117,11 +117,11 @@ func move_state(delta):
 		else:
 			velocity = velocity.move_toward(Vector2(0, velocity.y), friction * delta)
 			
-		
-		if input_vector.y and is_on_floor():
-			check_for_ladder()
-		elif input_vector.y < 0 and !is_on_floor():
-			check_for_ladder()
+		if state == MOVE:
+			if input_vector.y and is_on_floor():
+				check_for_ladder()
+			elif input_vector.y < 0 and !is_on_floor():
+				check_for_ladder()
 	
 		move()
 		if velocity.y > 0:
