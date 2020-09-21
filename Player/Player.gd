@@ -24,6 +24,7 @@ export var gravity = 17
 export var jump_height = 320
 export var climb_speed = 60
 export var climb_jump_height = 100
+export(Color) var dmgTextColor = Color(0.4, 0.0, 0.7, 1.0)
 
 enum {
 	MOVE,
@@ -233,11 +234,14 @@ func take_damage(dmg):
 	stats.health -= dmg
 	hurtbox.start_invincibility(1.5)
 	animationPlayer.play("Damage")
+	spawn_floating_text(dmg)
+
+func spawn_floating_text(text):
 	var dmg_text = floating_text.instance()
 	dmg_text.position += Vector2(rng.randf_range(-7, 7), (-25 + rng.randf_range(0, -5)))
 	dmg_text.velocity = Vector2(rng.randf_range(-5, 5), 0)
-	dmg_text.modulate = Color(0.7, 0.3, 1.0, 1.0)
-	dmg_text.text = dmg
+	dmg_text.modulate = dmgTextColor
+	dmg_text.text = text
 	add_child(dmg_text)
 
 func attack_animation_finished():

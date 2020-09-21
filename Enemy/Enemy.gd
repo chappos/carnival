@@ -24,6 +24,7 @@ export var acceleration = 500
 export var friction = 320
 export(float) var chase_time = 15.0
 export(float) var chase_leeway = 15.0
+export(Color) var dmgTextColor = Color(0.7, 0.7, 0.1, 1.0)
 
 enum { 
 	IDLE,
@@ -158,11 +159,14 @@ func _on_Hurtbox_area_entered(area):
 
 func take_damage(dmg):
 	self.health -= dmg
+	spawn_floating_text(dmg)
+
+func spawn_floating_text(text):
 	var dmg_text = floating_text.instance()
-	dmg_text.position += Vector2(rng.randf_range(-7, 7), (-25 + rng.randf_range(0, -5) * textList.get_child_count()))
+	dmg_text.position += Vector2(rng.randf_range(-7, 7), (-35 + rng.randf_range(0, -5) * textList.get_child_count()))
 	dmg_text.velocity = Vector2(rng.randf_range(-5, 5), 0)
-	dmg_text.modulate = Color(0.7, 0.7, 0.1, 1.0)
-	dmg_text.text = dmg
+	dmg_text.modulate = dmgTextColor
+	dmg_text.text = text
 	textList.add_child(dmg_text)
 
 func _on_ChaseTimer_timeout():

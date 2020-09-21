@@ -354,6 +354,7 @@ height = 4.71666
 [node name="Player" type="KinematicBody2D"]
 collision_layer = 2147483650
 script = ExtResource( 3 )
+dmgTextColor = Color( 0.4, 0, 0.698039, 1 )
 
 [node name="PlayerStats" parent="." instance=ExtResource( 4 )]
 max_health = 10
