@@ -4,6 +4,7 @@ onready var timer = $Timer
 onready var collisionShape = $CollisionShape2D
 
 var invincible = false setget set_invincible
+var tookDamageThisFrame = false
 
 signal invincibility_started
 signal invincibility_ended
@@ -23,7 +24,9 @@ func _on_Timer_timeout():
 	self.invincible = false
 
 func _on_Hurtbox_invincibility_ended():
+	tookDamageThisFrame = false
 	collisionShape.set_deferred("disabled", false)
 
 func _on_Hurtbox_invincibility_started():
+	tookDamageThisFrame = true
 	collisionShape.set_deferred("disabled", true)

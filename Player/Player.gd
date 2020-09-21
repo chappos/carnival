@@ -251,6 +251,7 @@ func _on_LadderHitbox_area_exited(area):
 	area.get_parent().can_be_grabbed = true
 
 func _on_Hurtbox_area_entered(area):
-	var dir = Vector2(self.global_position.x - area.get_parent().global_position.x, 0).normalized()
-	take_damage(area.get_damage())
-	velocity = Vector2(area.knockback * dir.x, -area.knockback)
+	if !hurtbox.tookDamageThisFrame:
+		var dir = Vector2(self.global_position.x - area.get_parent().global_position.x, 0).normalized()
+		take_damage(area.get_damage())
+		velocity = Vector2(area.knockback * dir.x, -area.knockback)
