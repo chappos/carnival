@@ -13,6 +13,7 @@ onready var hitbox_pivot = $HitboxPivot
 onready var platformDrop = $PlatformDropRaycast
 onready var collisionShape = $CollisionShape2D
 onready var stats = $PlayerStats
+onready var timer = $Timer
 
 export(int) var max_damage = 3
 export(int) var min_damage = 1
@@ -24,11 +25,14 @@ export var gravity = 17
 export var jump_height = 320
 export var climb_speed = 60
 export var climb_jump_height = 100
+export(int) var airdash_speed = 240
+export(float) var airdash_time = 0.4
 export(Color) var dmgTextColor = Color(0.4, 0.0, 0.7, 1.0)
 
 enum {
 	MOVE,
 	ATTACK,
+	AIRDASH,
 	CROUCH,
 	HURT,
 	CLIMB
@@ -38,8 +42,10 @@ var state = MOVE
 var velocity = Vector2.ZERO
 var terminal_velocity = 250
 var has_double_jump = true
+var has_airdash = true
 var is_climbing = false 
 var rng = RandomNumberGenerator.new()
+var airdash_direction = Vector2.ZERO
 
 func _ready():
 	rng.randomize()
@@ -50,6 +56,8 @@ func _physics_process(delta):
 	match state:
 		MOVE: 
 			move_state(delta)
+		AIRDASH:
+			airdash_state(delta)
 		ATTACK:
 			attack_state(delta)
 		CROUCH:
@@ -60,8 +68,11 @@ func _physics_process(delta):
 func move_state(delta):
 	var input_vector = get_input_vector()
 	
+	if is_on_floor():
+		has_airdash = true
+	
 	if input_vector.y > 0 and is_on_floor() and !check_for_ladder():
-		if input_vector.x and can_dropthrough():
+		if Input.is_action_just_pressed("ui_down") and input_vector.x and can_dropthrough():
 			platform_drop()
 			move()
 		else:
@@ -79,6 +90,12 @@ func move_state(delta):
 	
 		if Input.is_action_just_pressed("attack"):
 			state = ATTACK
+			
+		if Input.is_action_just_pressed("dash") and has_airdash and !is_on_floor():
+			if input_vector != Vector2.ZERO:
+				airdash_direction = input_vector
+				has_airdash = false
+				state = AIRDASH
 	
 		if Input.is_action_just_pressed("jump"):
 			if is_on_floor():
@@ -110,6 +127,23 @@ func move_state(delta):
 		if velocity.y > 0:
 			animationState.travel("Fall")
 
+#We only care about this being it's own state so we avoid applying gravity
+func airdash_state(delta):
+	animationState.travel("Fall")
+	if timer.is_stopped():
+		animationPlayer.play("Airdash")
+		has_double_jump = false
+		timer.set_wait_time(airdash_time)
+		timer.start()
+		velocity = Vector2(airdash_direction.x * airdash_speed, airdash_direction.y * airdash_speed)
+	velocity = velocity.move_toward(Vector2(0, 0), friction * delta)
+	velocity = move_and_slide(velocity, Vector2(0, -1))
+	if is_on_floor():
+		animationPlayer.seek(animationPlayer.get_current_animation_length(), true)
+		timer.stop()
+		has_double_jump = true
+		state = MOVE
+
 func crouch_state(delta):
 	animationState.travel("Crouch")
 	if is_on_floor():
@@ -117,14 +151,19 @@ func crouch_state(delta):
 			state = MOVE
 		else:
 			if Input.is_action_just_pressed("jump"):
-				if can_dropthrough():
+				var input_vector = get_input_vector()
+				if !input_vector.x and can_dropthrough():
 					platform_drop()
 					state = MOVE
+				else:
+					airdash_direction = input_vector
+					has_airdash = false
+					state = AIRDASH
 			elif Input.is_action_just_pressed("attack"):
 				state = ATTACK
 	else:
 		state = MOVE
-	velocity = velocity.move_toward(Vector2(0, velocity.y), friction * delta)
+	velocity = velocity.move_toward(Vector2(0, velocity.y), 0.7 * friction * delta)
 	move()
 
 func move():
@@ -177,7 +216,7 @@ func get_input_vector():
 	var input_vector = Vector2.ZERO
 	input_vector.x = Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left")
 	input_vector.y = Input.get_action_strength("ui_down") - Input.get_action_strength("ui_up")
-	return input_vector
+	return input_vector.normalized()
 
 func jump():
 	velocity.y = -jump_height
@@ -258,3 +297,9 @@ func _on_Hurtbox_area_entered(area):
 		var dir = Vector2(self.global_position.x - area.get_parent().global_position.x, 0).normalized()
 		take_damage(area.get_damage())
 		velocity = Vector2(area.knockback * dir.x, -area.knockback)
+
+
+func _on_Timer_timeout():
+	match state:
+		AIRDASH:
+			state = MOVE
