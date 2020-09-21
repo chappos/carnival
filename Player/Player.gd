@@ -61,7 +61,11 @@ func move_state(delta):
 	var input_vector = get_input_vector()
 	
 	if input_vector.y > 0 and is_on_floor() and !check_for_ladder():
-		state = CROUCH
+		if input_vector.x and can_dropthrough():
+			platform_drop()
+			move()
+		else:
+			state = CROUCH
 	else:
 		if input_vector.x:
 			if is_on_floor():
@@ -113,8 +117,7 @@ func crouch_state(delta):
 			state = MOVE
 		else:
 			if Input.is_action_just_pressed("jump"):
-				if check_for_dropthrough():
-					has_double_jump = false
+				if can_dropthrough():
 					platform_drop()
 					state = MOVE
 			elif Input.is_action_just_pressed("attack"):
@@ -164,16 +167,11 @@ func handle_sprite_flip(input):
 	sprite.flip_h = min(0, input.x)
 	hitbox_pivot.rotation_degrees = min(0, 180 * input.x)
 
-func check_for_dropthrough():
-	var result = false
-	var numRequired = platformDrop.get_child_count()
-	var numColliding = 0
+func can_dropthrough():
 	for child in platformDrop.get_children():
 		if child.is_colliding():
-			numColliding += 1
-	if numColliding == numRequired:
-		result = true
-	return result
+			return false
+	return true
 
 func get_input_vector():
 	var input_vector = Vector2.ZERO
@@ -186,8 +184,13 @@ func jump():
 	animationState.travel("Jump")
 
 func platform_drop():
-	velocity.y = -90
-	animationState.travel("Jump")
+	if state == MOVE:
+		animationState.travel("Fall")
+		velocity.y = 10
+	else:
+		velocity.y = -90
+		has_double_jump = false	
+		animationState.travel("Jump")
 	collisionShape.disabled = true
 	tween.interpolate_callback(collisionShape, 0.2, "set_disabled", false)
 	tween.start()

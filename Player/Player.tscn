@@ -421,16 +421,16 @@ disabled = true
 [node name="PlatformDropRaycast" type="Node2D" parent="."]
 
 [node name="RayCast2D" type="RayCast2D" parent="PlatformDropRaycast"]
-position = Vector2( 3, 35 )
+position = Vector2( 3, 12 )
 enabled = true
-cast_to = Vector2( 0, 60 )
+cast_to = Vector2( 0, 5 )
 collision_mask = 5
 collide_with_areas = true
 
 [node name="RayCast2D2" type="RayCast2D" parent="PlatformDropRaycast"]
-position = Vector2( -3, 35 )
+position = Vector2( -3, 12 )
 enabled = true
-cast_to = Vector2( 0, 60 )
+cast_to = Vector2( 0, 5 )
 collision_mask = 5
 collide_with_areas = true
 
