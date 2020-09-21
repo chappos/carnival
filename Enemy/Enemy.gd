@@ -71,9 +71,9 @@ func die():
 		hurtbox.set_deferred("disabled", true)
 		animationState.travel("Die")
 		tween.interpolate_property(sprite, "modulate:a", 1.0, 0.0, 1.0, Tween.EASE_IN)
+		tween.interpolate_deferred_callback(self, 1.0, "queue_free")
 		tween.start()
-		yield(get_tree().create_timer(1.0), "timeout")
-		queue_free()
+	velocity = Vector2.ZERO
 
 func idle_state(delta):
 	animationState.travel("Idle")
