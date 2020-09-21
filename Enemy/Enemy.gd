@@ -133,8 +133,10 @@ func hurt_state(delta):
 		direction = 1
 		move(delta)
 	else:
-		velocity.y = min(velocity.y - (0.25 * -gravity), terminal_velocity)
-		velocity = velocity.move_toward(Vector2(0, velocity.y), friction * delta)
+		if is_on_floor():
+			velocity = velocity.move_toward(Vector2(0, velocity.y), friction * delta)
+		else:
+			velocity.y = min(velocity.y - (0.25 * -gravity), terminal_velocity)
 	velocity = move_and_slide(velocity, Vector2(0, -1))
 
 func _on_Timer_timeout():
