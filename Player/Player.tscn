@@ -67,8 +67,8 @@ tracks/2/keys = {
 "update": 0,
 "values": [ 0.77, 0.762, 0.0, 0.762, 0.0 ]
 }
-tracks/3/type = "value"
-tracks/3/path = NodePath("Hurtbox:invincible")
+tracks/3/type = "method"
+tracks/3/path = NodePath("Hurtbox")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/imported = false
@@ -76,8 +76,13 @@ tracks/3/enabled = true
 tracks/3/keys = {
 "times": PoolRealArray( 0, 0.4 ),
 "transitions": PoolRealArray( 1, 1 ),
-"update": 1,
-"values": [ true, false ]
+"values": [ {
+"args": [ true ],
+"method": "set_invincible"
+}, {
+"args": [ false ],
+"method": "set_invincible"
+} ]
 }
 
 [sub_resource type="Animation" id=4]

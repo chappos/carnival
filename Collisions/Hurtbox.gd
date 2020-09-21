@@ -3,7 +3,7 @@ extends Area2D
 onready var timer = $Timer
 onready var collisionShape = $CollisionShape2D
 
-export var invincible = false setget set_invincible
+var invincible = false setget set_invincible
 var tookDamageThisFrame = false
 
 signal invincibility_started
@@ -24,6 +24,8 @@ func _on_Timer_timeout():
 	self.invincible = false
 
 func _on_Hurtbox_invincibility_ended():
+	if timer.time_left > 0:
+		start_invincibility(timer.time_left)
 	tookDamageThisFrame = false
 	collisionShape.set_deferred("disabled", false)
 
