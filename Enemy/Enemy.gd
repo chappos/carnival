@@ -43,8 +43,8 @@ var chase_target = null
 func _ready():
 	animationTree.active = true
 	rng.randomize()
-	yield(get_tree().create_timer(1.0), "timeout") #janky fix to hitbox on spawn bug
-	hitboxShape.disabled = false
+	tween.interpolate_callback(hitboxShape, 1.0, "set_disabled", false) #janky fix to hitbox on spawn bug
+	tween.start()
 
 func _physics_process(delta):
 	match state:
@@ -143,19 +143,19 @@ func hurt_animation_finished():
 	state = CHASE
 
 func _on_Hurtbox_area_entered(area):
-	if state != DEAD:
+	if state != DEAD: # Check state here to avoid damaging already dead enemies
 		var area_parent = area.get_parent().get_parent()
 		take_damage(area.get_damage())
 		var dir = Vector2(self.global_position.x - area_parent.global_position.x, 0).normalized()
 		direction = dir.x
 		sprite.flip_h = max(0, direction)
-		if state == DEAD:
+		if state == DEAD: # State could have changed since initial condition due to take_damage
 			hitbox.set_deferred("disabled", true)
 			hurtbox.set_deferred("disabled", true)
 		else:
 			state = HURT
 			chase_target = area_parent
-	velocity.x = area.knockback * direction
+		velocity.x = area.knockback * direction
 
 func take_damage(dmg):
 	self.health -= dmg
