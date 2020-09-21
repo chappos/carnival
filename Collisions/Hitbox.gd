@@ -1,6 +1,7 @@
 extends Area2D
 
-export(int) var knockback = 100
+export(Vector2) var knockback = Vector2(200, 200)
+export(float) var hitstun = 1.0
 export(int) var max_damage = 1 
 export(int) var min_damage = 1
 

@@ -24,8 +24,6 @@ func _on_Timer_timeout():
 	self.invincible = false
 
 func _on_Hurtbox_invincibility_ended():
-	if timer.time_left > 0:
-		start_invincibility(timer.time_left)
 	tookDamageThisFrame = false
 	collisionShape.set_deferred("disabled", false)
 

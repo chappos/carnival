@@ -137,7 +137,7 @@ height = 10.0
 
 [node name="Enemy" type="KinematicBody2D"]
 collision_layer = 0
-collision_mask = 0
+collision_mask = 5
 script = ExtResource( 2 )
 max_health = 5
 
@@ -146,12 +146,11 @@ position = Vector2( 0, -12 )
 texture = ExtResource( 1 )
 vframes = 4
 hframes = 7
-frame = 22
+frame = 18
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2( 0, -6 )
 shape = SubResource( 1 )
-disabled = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/Die = SubResource( 2 )
@@ -170,6 +169,8 @@ parameters/playback = SubResource( 19 )
 
 [node name="ChaseTimer" type="Timer" parent="."]
 
+[node name="HitstunTimer" type="Timer" parent="."]
+
 [node name="Hurtbox" parent="." instance=ExtResource( 3 )]
 collision_layer = 0
 collision_mask = 32
@@ -181,7 +182,6 @@ shape = SubResource( 20 )
 [node name="Hitbox" parent="." instance=ExtResource( 4 )]
 collision_layer = 16
 collision_mask = 0
-knockback = 150
 max_damage = 2
 
 [node name="CollisionShape2D" parent="Hitbox" index="0"]
@@ -192,6 +192,7 @@ disabled = true
 [node name="FloatingTextList" type="Node2D" parent="."]
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
 [connection signal="timeout" from="ChaseTimer" to="." method="_on_ChaseTimer_timeout"]
+[connection signal="timeout" from="HitstunTimer" to="." method="_on_HitstunTimer_timeout"]
 [connection signal="area_entered" from="Hurtbox" to="." method="_on_Hurtbox_area_entered"]
 
 [editable path="Hurtbox"]

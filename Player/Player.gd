@@ -297,7 +297,7 @@ func _on_Hurtbox_area_entered(area):
 	if !hurtbox.tookDamageThisFrame:
 		var dir = Vector2(self.global_position.x - area.get_parent().global_position.x, 0).normalized()
 		take_damage(area.get_damage())
-		velocity = Vector2(area.knockback * dir.x, -area.knockback)
+		velocity = Vector2(area.knockback.x, -area.knockback.y)
 
 
 func _on_Timer_timeout():

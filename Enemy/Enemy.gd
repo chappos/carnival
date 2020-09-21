@@ -5,10 +5,12 @@ var floating_text = load("res://FloatingText.tscn")
 onready var sprite = $Sprite
 onready var timer = $Timer
 onready var chaseTimer = $ChaseTimer
+onready var hitstunTimer = $HitstunTimer
 onready var tween = $Tween
+onready var collisionShape = $CollisionShape2D
 onready var hitbox = $Hitbox
-onready var hurtbox = $Hurtbox
 onready var hitboxShape = $Hitbox/CollisionShape2D
+onready var hurtbox = $Hurtbox
 onready var animationPlayer = $AnimationPlayer
 onready var animationTree = $AnimationTree
 onready var animationState = animationTree.get("parameters/playback")
@@ -22,6 +24,7 @@ export(int) var min_damage = 1
 export var max_speed = 80
 export var acceleration = 500
 export var friction = 320
+export var gravity = 17
 export(float) var chase_time = 15.0
 export(float) var chase_leeway = 15.0
 export(Color) var dmgTextColor = Color(0.7, 0.7, 0.1, 1.0)
@@ -34,6 +37,7 @@ enum {
 	DEAD
 }
 
+var terminal_velocity = 250
 var state = IDLE
 var velocity = Vector2.ZERO
 var direction = 0
@@ -116,8 +120,9 @@ func chase_state(delta):
 
 func move(delta):
 	sprite.flip_h = min(0, direction)
+	velocity.y = min(velocity.y - (-gravity), terminal_velocity)
 	velocity = velocity.move_toward(Vector2(direction * max_speed, 0), acceleration * delta)
-	velocity = move_and_slide(velocity)
+	velocity = move_and_slide(velocity, Vector2(0, -1))
 
 func hurt_state(delta):
 	animationState.travel("Hurt")
@@ -128,8 +133,9 @@ func hurt_state(delta):
 		direction = 1
 		move(delta)
 	else:
-		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
-	velocity = move_and_slide(velocity)
+		velocity.y = min(velocity.y - (0.25 * -gravity), terminal_velocity)
+		velocity = velocity.move_toward(Vector2(0, velocity.y), friction * delta)
+	velocity = move_and_slide(velocity, Vector2(0, -1))
 
 func _on_Timer_timeout():
 	match state:
@@ -140,7 +146,8 @@ func _on_Timer_timeout():
 			direction = clamp(rng.randi_range(-2, 2), -1, 1) #results in a 1 in 5 chance to return to idle, otherwise give direction
 
 func hurt_animation_finished():
-	state = CHASE
+	pass
+	#state = CHASE
 
 func _on_Hurtbox_area_entered(area):
 	if state != DEAD: # Check state here to avoid damaging already dead enemies
@@ -155,11 +162,17 @@ func _on_Hurtbox_area_entered(area):
 		else:
 			state = HURT
 			chase_target = area_parent
-		velocity.x = area.knockback * direction
+			hitstunTimer.start(calculate_hitstun(area.hitstun))
+		velocity.x = area.knockback.x * direction
+		velocity.y = -area.knockback.y
 
 func take_damage(dmg):
 	self.health -= dmg
 	spawn_floating_text(dmg)
+
+func calculate_hitstun(hitstun):
+	var output = hitstun * 0.25 * (max_health / health)
+	return output
 
 func spawn_floating_text(text):
 	var dmg_text = floating_text.instance()
@@ -174,3 +187,12 @@ func _on_ChaseTimer_timeout():
 		CHASE:
 			chase_target = null
 			state = IDLE
+
+
+func _on_HitstunTimer_timeout():
+	match state:
+		HURT:
+			if chase_target:
+				state = CHASE
+			else: 
+				state = IDLE
