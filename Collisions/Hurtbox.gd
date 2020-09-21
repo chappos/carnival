@@ -3,7 +3,7 @@ extends Area2D
 onready var timer = $Timer
 onready var collisionShape = $CollisionShape2D
 
-var invincible = false setget set_invincible
+export var invincible = false setget set_invincible
 var tookDamageThisFrame = false
 
 signal invincibility_started

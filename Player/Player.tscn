@@ -67,6 +67,18 @@ tracks/2/keys = {
 "update": 0,
 "values": [ 0.77, 0.762, 0.0, 0.762, 0.0 ]
 }
+tracks/3/type = "value"
+tracks/3/path = NodePath("Hurtbox:invincible")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ true, false ]
+}
 
 [sub_resource type="Animation" id=4]
 length = 0.4
@@ -409,7 +421,7 @@ script = ExtResource( 3 )
 dmgTextColor = Color( 0.4, 0, 0.698039, 1 )
 
 [node name="PlayerStats" parent="." instance=ExtResource( 4 )]
-max_health = 10
+max_health = 15
 
 [node name="Sprite" type="Sprite" parent="."]
 material = SubResource( 2 )
@@ -417,7 +429,6 @@ position = Vector2( 0, -12 )
 texture = ExtResource( 1 )
 vframes = 4
 hframes = 7
-frame = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2( 0, -4 )
