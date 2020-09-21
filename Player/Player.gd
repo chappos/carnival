@@ -17,12 +17,12 @@ onready var timer = $Timer
 
 export(int) var max_damage = 3
 export(int) var min_damage = 1
-export var max_speed = 120
-export var acceleration = 1500
-export var air_acceleration = 340
+export var max_speed = 160
+export var acceleration = 1600
+export var air_acceleration = 220
 export var friction = 550
 export var gravity = 17
-export var jump_height = 320
+export var jump_height = 360
 export var climb_speed = 60
 export var climb_jump_height = 100
 export(int) var airdash_speed = 240
@@ -70,6 +70,7 @@ func move_state(delta):
 	
 	if is_on_floor():
 		has_airdash = true
+		has_double_jump = true
 	
 	if input_vector.y > 0 and is_on_floor() and !check_for_ladder():
 		if Input.is_action_just_pressed("ui_down") and input_vector.x and can_dropthrough():
@@ -100,11 +101,11 @@ func move_state(delta):
 		if Input.is_action_just_pressed("jump"):
 			if is_on_floor():
 				has_double_jump = true
-				jump()
+				call_deferred("jump")
 			else:
 				if has_double_jump:
 					has_double_jump = false
-					jump()
+					call_deferred("jump")
 	
 		if Input.is_action_just_released("jump"):
 			jump_cut()
@@ -221,7 +222,7 @@ func get_input_vector():
 func jump():
 	velocity.y = -jump_height
 	animationState.travel("Jump")
-
+	
 func platform_drop():
 	if state == MOVE:
 		animationState.travel("Fall")
@@ -235,8 +236,8 @@ func platform_drop():
 	tween.start()
 
 func jump_cut():
-	if velocity.y < -110:
-		velocity.y = -110
+	if velocity.y < -180:
+		velocity.y = -180
 
 func check_for_ladder():
 	var closest_area = null
