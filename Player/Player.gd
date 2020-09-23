@@ -10,7 +10,7 @@ onready var animationState = animationTree.get("parameters/playback")
 onready var hurtbox = $Hurtbox
 onready var ladderHitbox = $LadderHitbox
 onready var hitbox_pivot = $HitboxPivot
-onready var platformDrop = $PlatformDropRaycast
+onready var platformDrop = $PlatformDropCheck
 onready var collisionShape = $CollisionShape2D
 onready var stats = $PlayerStats
 onready var timer = $Timer
@@ -211,9 +211,8 @@ func handle_sprite_flip(input):
 	hitbox_pivot.rotation_degrees = min(0, 180 * input.x)
 
 func can_dropthrough():
-	for child in platformDrop.get_children():
-		if child.is_colliding():
-			return false
+	for body in platformDrop.get_overlapping_bodies():
+		return false
 	return true
 
 func get_input_vector():
