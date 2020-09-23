@@ -88,7 +88,8 @@ func die():
 
 func idle_state(delta):
 	animationState.travel("Idle")
-	velocity.y = min(velocity.y - (-gravity), terminal_velocity)
+	if !is_on_floor():
+		velocity.y = min(velocity.y - (-gravity), terminal_velocity)
 	velocity = velocity.move_toward(Vector2(0, velocity.y), friction * delta)
 	velocity = move_and_slide(velocity, Vector2(0, -1))
 	if timer.is_stopped():
