@@ -88,7 +88,9 @@ func die():
 
 func idle_state(delta):
 	animationState.travel("Idle")
-	velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
+	velocity.y = min(velocity.y - (-gravity), terminal_velocity)
+	velocity = velocity.move_toward(Vector2(0, velocity.y), friction * delta)
+	velocity = move_and_slide(velocity, Vector2(0, -1))
 	if timer.is_stopped():
 		timer.set_wait_time(rng.randf_range(1.0, 3.0))
 		timer.start()
