@@ -1,0 +1,41 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://HealthBar.gd" type="Script" id=1]
+[ext_resource path="res://Assets/hpbar_progress.png" type="Texture" id=2]
+[ext_resource path="res://Assets/hpbar_over.png" type="Texture" id=3]
+[ext_resource path="res://Assets/hpbar_under.png" type="Texture" id=4]
+
+[node name="HealthBar" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -288.0
+margin_bottom = -171.0
+rect_scale = Vector2( 0.75, 0.75 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HealthBarUnder" type="TextureProgress" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+texture_under = ExtResource( 4 )
+texture_progress = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HealthBarOver" type="TextureProgress" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+texture_over = ExtResource( 3 )
+texture_progress = ExtResource( 2 )
+tint_progress = Color( 1, 0, 0, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Tween" type="Tween" parent="."]
+
+[node name="Timer" type="Timer" parent="."]
+one_shot = true

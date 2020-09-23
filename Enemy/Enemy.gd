@@ -15,10 +15,11 @@ onready var animationPlayer = $AnimationPlayer
 onready var animationTree = $AnimationTree
 onready var animationState = animationTree.get("parameters/playback")
 onready var spawnBox = get_parent().get_parent() # Parent = Enemies node, Grandparent = EnemySpawner
-onready var health = max_health setget health_changed
 onready var textList = $FloatingTextList
+onready var hp_bar = $HealthBar
+onready var health = max_health setget health_changed
 
-export(int) var max_health = 3
+export(int) var max_health = 3 
 export(int) var max_damage = 2
 export(int) var min_damage = 1
 export var max_speed = 80
@@ -46,6 +47,9 @@ var rng = RandomNumberGenerator.new()
 var chase_target = null
 
 func _ready():
+	hp_bar.update_max_health(max_health)
+	hp_bar.update_health(health)
+	hp_bar.set_visible(false)
 	animationTree.active = true
 	rng.randomize()
 	tween.interpolate_callback(hitboxShape, 1.0, "set_disabled", false) #janky fix to hitbox on spawn bug
@@ -66,6 +70,8 @@ func _physics_process(delta):
 			
 func health_changed(value):
 	health = clamp(value, 0, max_health)
+	hp_bar.update_health(health)
+	hp_bar.set_visible(true)
 	if health == 0:
 		die()
 
@@ -192,6 +198,7 @@ func _on_ChaseTimer_timeout():
 	match state:
 		CHASE:
 			chase_target = null
+			hp_bar.set_visible(false)
 			state = IDLE
 
 

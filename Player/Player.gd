@@ -14,6 +14,7 @@ onready var platformDrop = $PlatformDropRaycast
 onready var collisionShape = $CollisionShape2D
 onready var stats = $PlayerStats
 onready var timer = $Timer
+onready var hp_bar = $Camera2D/UI/HealthBar
 
 export(int) var max_damage = 3
 export(int) var min_damage = 1
@@ -48,6 +49,8 @@ var rng = RandomNumberGenerator.new()
 var airdash_direction = Vector2.ZERO
 
 func _ready():
+	hp_bar.update_max_health(stats.max_health)
+	hp_bar.update_health(stats.health)
 	rng.randomize()
 	stats.connect("no_health", self, "queue_free")
 	animationTree.active = true
@@ -270,6 +273,7 @@ func check_for_ladder():
 
 func take_damage(dmg):
 	stats.health -= dmg
+	hp_bar.update_health(stats.health)
 	hurtbox.start_invincibility(1.5)
 	animationPlayer.play("Damage")
 	spawn_floating_text(dmg)
@@ -297,7 +301,7 @@ func _on_Hurtbox_area_entered(area):
 	if !hurtbox.tookDamageThisFrame:
 		var dir = Vector2(self.global_position.x - area.get_parent().global_position.x, 0).normalized()
 		take_damage(area.get_damage())
-		velocity = Vector2(area.knockback.x, -area.knockback.y)
+		velocity = Vector2(area.knockback.x * dir.x, -area.knockback.y)
 
 
 func _on_Timer_timeout():
