@@ -1,4 +1,4 @@
-extends Control
+extends Node2D
 
 onready var health_over = $HealthBarOver
 onready var health_under = $HealthBarUnder

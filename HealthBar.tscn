@@ -5,16 +5,8 @@
 [ext_resource path="res://Assets/hpbar_over.png" type="Texture" id=3]
 [ext_resource path="res://Assets/hpbar_under.png" type="Texture" id=4]
 
-[node name="HealthBar" type="Control"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_right = -288.0
-margin_bottom = -171.0
-rect_scale = Vector2( 0.75, 0.75 )
+[node name="HealthBar" type="Node2D"]
 script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="HealthBarUnder" type="TextureProgress" parent="."]
 margin_right = 40.0
